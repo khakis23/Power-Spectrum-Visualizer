@@ -1,0 +1,10 @@
+[project]
+name = "fft"
+version = "0.1.0"
+description = "Live spectrum analysis from .wav file"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.0.0",
+    "scipy>=1.13.0",
+    "pygame==2.6.0",
+]
