@@ -11,6 +11,7 @@ class Visualizer:
         # pygame inits
         pygame.init()
         pygame.mixer.init()
+        pygame.font.init()
 
         # window
         self.win_w = None
@@ -25,6 +26,7 @@ class Visualizer:
         pygame.display.set_caption("Audio Spectrum Visualizer")
 
         self.clock = pygame.time.Clock()
+        self.font = pygame.font.SysFont("Trebuchet MS", 18)
 
         ## visual settings
         self.n_bars = 128
@@ -38,6 +40,9 @@ class Visualizer:
         self.bar_color = (255, 255, 255)
         self.bar_grad = None
         self.bar_mode = "color"
+
+        # font color
+        self.font_color = (255, 255, 255)
 
         ## audio adjustments
         self.dynamic_range = 90
@@ -67,6 +72,12 @@ class Visualizer:
 
     def set_n_bars(self, n_bars):
         self.n_bars = n_bars
+
+    def set_font_color(self, color: tuple[int, int, int] = (255, 255, 255)):
+        self.font_color = color
+
+    def set_font_size(self, size: int = 20):
+        self.font = pygame.font.SysFont("Trebuchet MS", size)
 
     def set_background_color(self, mode="color", data=(0, 0, 0)):
         """
@@ -199,6 +210,58 @@ class Visualizer:
                          int(y)
                      )
                  )
+            self._draw_text()
 
             pygame.display.flip()
             self.clock.tick(fps)
+
+    def _draw_text(self):
+        n_xlabels = 9
+        n_ylabels = 6
+        x_dist = 4  # vertical distance of x labels from the bottom of the visual
+        y_dist = 35  # horizontal distance of y labels from the left of the visual
+        y_vert_correction = -25
+        dx = self.vis_w / n_xlabels
+        dy = self.vis_h / n_ylabels
+
+        # x axis labels
+        for i, f in zip(range(n_xlabels), np.geomspace(20, 20_000, n_xlabels + 1)):
+            # truncate the right side of the number for a clearner look
+            txt = f
+            if f < 100:
+                txt = f"{f // 10 * 10:.0f}"
+            else: #f < 1000:
+                txt = f"{f // 100 * 100:.0f}"
+
+            # draw to screen
+            self.screen.blit(
+                self.font.render(
+                    txt, True, self.font_color
+                ),
+                (self.horiz_shift + dx * i, self.vis_h + self.vert_shift + x_dist)
+            )
+
+        # frequency label
+        x_label_txt = self.font.render("Frequency (Hz)", True, self.font_color)
+        self.screen.blit(
+            x_label_txt,
+            ( self.win_w // 2 - x_label_txt.get_width() // 2, self.vis_h + self.vert_shift + 7 * x_dist)
+        )
+
+        # y axis labels
+        for i, db in zip(range(n_ylabels + 1), np.linspace(self.dynamic_range, 0, n_ylabels + 1)):
+            txt = f"-{db:.0f}"
+            self.screen.blit(
+                self.font.render(
+                    txt, True, self.font_color
+                ),
+                (self.horiz_shift - y_dist, (self.vis_h + self.vert_shift) - dy * i + y_vert_correction)
+            )
+
+        # amplitude label
+        y_label_txt = self.font.render("Amplitude (dB)", True, self.font_color)
+        y_label_txt = pygame.transform.rotate(y_label_txt, 90)
+        self.screen.blit(
+            y_label_txt,
+            (self.horiz_shift - y_dist * 2, self.win_h // 2 - y_label_txt.get_height() // 2)
+        )
