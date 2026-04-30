@@ -12,7 +12,7 @@ if __name__ == "__main__":
     file_path_name = get_file_path()   # exclude extension
 
     # This could be done in C++
-    wav_to_spectra_file(AUDIO_DIR / (file_path_name + ".wav"), SPEC_DIR / (file_path_name + ".spa"))
+    wav_to_spectra_file(AUDIO_DIR / (file_path_name + ".wav"), SPEC_DIR / (file_path_name + ".spa"), fps=30)
 
     vis = Visualizer()
     vis.set_n_bars(128)
@@ -22,4 +22,4 @@ if __name__ == "__main__":
     vis.set_background_color("image", "assets/space_background.jpg")
 
     # This load the .spa file and the .wav file form the AUDIO and SPECTRA directories
-    vis.visualize_from_file(SPEC_DIR / (file_path_name + ".spa"), AUDIO_DIR / (file_path_name + ".wav"))
+    vis.visualize_from_file(SPEC_DIR / (file_path_name + ".spa"), AUDIO_DIR / (file_path_name + ".wav"), fps=30)

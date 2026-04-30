@@ -19,7 +19,7 @@ def wav_to_spectra_file(in_file, out_file, fps=30):
     if len(data.shape) > 1:
         data = np.mean(data, axis=1)
 
-    # normalize data (-1 < 1)
+    # normalize data (0 < 1)
     data = data / np.max(np.abs(data))
 
     chuck_size = int(fs / fps)
@@ -31,7 +31,7 @@ def wav_to_spectra_file(in_file, out_file, fps=30):
         cur_chuck = data[i * chuck_size : (i + 1) * chuck_size]
 
         # window to smooth edges
-        cur_chuck = np.hanning(len(cur_chuck)) * cur_chuck
+        # cur_chuck = np.hanning(len(cur_chuck)) * cur_chuck
 
         # add spectrum to list
         spectra.append(

@@ -125,8 +125,6 @@ class Visualizer:
             end = data[1]
 
             for i in range(self.n_bars):
-                ratio = i / (self.n_bars - 1)
-
                 r = int(start[0] + i / (self.n_bars - 1) * (end[0] - start[0]))
                 g = int(start[1] + i / (self.n_bars - 1) * (end[1] - start[1]))
                 b = int(start[2] + i / (self.n_bars - 1) * (end[2] - start[2]))
@@ -144,10 +142,10 @@ class Visualizer:
         n_fft_bins = spectra.shape[1]
         chuck_size = int(n_fft_bins - 1) * 2
 
-        # get the actual frequencies from the FFT
+        # get the actual frequencies from the FFT (0 - pi)
         freqs = np.fft.rfftfreq(chuck_size, 1 / fs)
 
-        # scale frequncies to logarithmic scale (20Hz - 20kHz)
+        # scale frequencies to logarithmic scale (20Hz - 20kHz)
         log_bins = np.geomspace(20, 20_000, self.n_bars + 1)
 
         # create a map of where a bar should be based on the logarithmic frequency
