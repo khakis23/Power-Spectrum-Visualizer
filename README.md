@@ -40,3 +40,41 @@ pip install -r requirements.txt
 python3 -m pip install -U pygame==2.6.0
 python3 fft.py -f Dreams.wav
 ```
+
+## FFT Algorithm
+
+```C++
+#include <vector>
+#include <complex>
+#include <cmath>
+
+void fft(std::vector<std::complex<double>> &v) {
+    const size_t n = v.size();
+    // Base Case
+    if (n == 1)
+        return;
+
+    // Divide vector into evens and odds
+    std::vector<std::complex<double>> even(n / 2), odd(n / 2);
+    for (size_t i = 0; i < n; i += 2) {
+        even[i / 2] = v[i];
+        odd[i / 2] = v[i + 1];
+    }
+
+    // Recursively call on each half
+    fft(even);
+    fft(odd);
+
+    // Compose twittle factor
+    const double theta = -2 * M_PI / n;
+    std::complex<double> w(1);
+    std::complex<double> wn(cos(theta), sin(theta));
+
+    // Stitch vector back together using the butterfly method
+    for (size_t i = 0; i < n / 2; i++) {
+        v[i] = even[i] + w * odd[i];
+        v[i + n / 2] = even[i] - w * odd[i];
+        w *= wn;
+    }
+}
+```
